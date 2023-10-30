@@ -21,23 +21,60 @@ namespace AgendaTarefas.Controllers
             _tarefaRepositorio = tarefaRepositorio;
         }
 
-        public IActionResult Index(DateTime? dataInicial, DateTime? dataFinal)
+        public IActionResult Index(DateTime? dataInicial, DateTime? dataFinal, string nomeTarefa)
         {
-            if (!dataInicial.HasValue && !dataFinal.HasValue)
+            if (string.IsNullOrEmpty(nomeTarefa))
             {
-                if (HttpContext.Session.TryGetValue("DataInicial", out var dataInicialSession) &&
-                    HttpContext.Session.TryGetValue("DataFinal", out var dataFinalSession))
+                if (!dataInicial.HasValue && !dataFinal.HasValue)
                 {
-                    dataInicial = DateTime.Parse(Encoding.UTF8.GetString(dataInicialSession));
-                    dataFinal = DateTime.Parse(Encoding.UTF8.GetString(dataFinalSession));
+                    if (HttpContext.Session.TryGetValue("DataInicial", out var dataInicialSession) &&
+                        HttpContext.Session.TryGetValue("DataFinal", out var dataFinalSession))
+                    {
+                        dataInicial = DateTime.Parse(Encoding.UTF8.GetString(dataInicialSession));
+                        dataFinal = DateTime.Parse(Encoding.UTF8.GetString(dataFinalSession));
+                    }
                 }
+                else
+                {
+                    HttpContext.Session.SetString("DataInicial", dataInicial?.ToString());
+                    HttpContext.Session.SetString("DataFinal", dataFinal?.ToString());
+                }
+                return View(PegarDatas(dataInicial, dataFinal));
             }
             else
+                return View(PegarDatas(nomeTarefa));
+        }
+
+        private List<DatasViewModel> PegarDatas(string nomeTarefa)
+        {
+            DatasViewModel data;
+            List<DatasViewModel> listaDatas = new List<DatasViewModel>();
+            List<DateTime> listaFeriadosDataAtual = new List<DateTime>();
+            string anoPesquisa = "";
+
+            List<Tarefa> listaTarefas = _tarefaRepositorio.BuscarTarefasPorNome(nomeTarefa).Result;
+            if (listaTarefas.Count > 0)
             {
-                HttpContext.Session.SetString("DataInicial", dataInicial?.ToString());
-                HttpContext.Session.SetString("DataFinal", dataFinal?.ToString());
+                listaFeriadosDataAtual = ListarFeriadosAsync(Convert.ToInt32(listaTarefas[0].Data.Substring(6))).Result;
+                anoPesquisa = listaTarefas[0].Data.Substring(6);
             }
-            return View(PegarDatas(dataInicial, dataFinal));
+
+            foreach (var item in listaTarefas)
+            {
+                data = new DatasViewModel();
+                data.Datas = item.Data;
+                data.Identificadores = "collapse" + item;
+                if (item.Data.Substring(6) == anoPesquisa)
+                    data.Feriado = listaFeriadosDataAtual.Contains(Convert.ToDateTime(item.Data));
+                else
+                {
+                    listaFeriadosDataAtual = ListarFeriadosAsync(Convert.ToInt32(item.Data.Substring(6))).Result;
+                    anoPesquisa = item.Data.Substring(6);
+                    data.Feriado = listaFeriadosDataAtual.Contains(Convert.ToDateTime(item.Data));
+                }
+                listaDatas.Add(data);
+            }
+            return listaDatas;
         }
 
         private List<DatasViewModel> PegarDatas(DateTime? dataInicial, DateTime? dataFinal)
@@ -105,7 +142,6 @@ namespace AgendaTarefas.Controllers
                 return new List<DateTime>();
             }
         }
-
 
         [HttpGet]
         public IActionResult CriarTarefa(string dataTarefa)

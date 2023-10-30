@@ -1,4 +1,6 @@
 ﻿using AgendaTarefas.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AgendaTarefas.Repositorio
@@ -34,6 +36,11 @@ namespace AgendaTarefas.Repositorio
             Tarefa tarefa = await _contexto.Tarefas.FindAsync(tarefaId);
             _contexto.Tarefas.Remove(tarefa);
             await _contexto.SaveChangesAsync();
+        }
+
+        public async Task<List<Tarefa>> BuscarTarefasPorNome(string nomeTarefa)
+        {
+            return _contexto.Tarefas.Where(t => t.Nome == nomeTarefa).OrderBy(x => x.Data).ToList();
         }
     }
 }
