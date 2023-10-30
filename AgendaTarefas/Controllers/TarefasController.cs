@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using AgendaTarefas.Models;
 using AgendaTarefas.Repositorio;
-using AgendaTarefas.Utilitarios;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -104,7 +102,7 @@ namespace AgendaTarefas.Controllers
                 {
                     Console.WriteLine($"Erro na solicitação HTTP: {e.Message}");
                 }
-                return new List<DateTime>(); // Retorna uma lista vazia em caso de erro.
+                return new List<DateTime>();
             }
         }
 
@@ -127,8 +125,7 @@ namespace AgendaTarefas.Controllers
                 _tarefaRepositorio.CriarTarefaAsync(tarefa);
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(tarefa);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -139,7 +136,7 @@ namespace AgendaTarefas.Controllers
             if (tarefa == null)
                 return NotFound();
 
-            return View(tarefa);
+            return PartialView(tarefa.Result);
         }
 
         [HttpPost]

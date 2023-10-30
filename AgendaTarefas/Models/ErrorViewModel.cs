@@ -1,5 +1,3 @@
-using System;
-
 namespace AgendaTarefas.Models
 {
     public class ErrorViewModel

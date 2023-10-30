@@ -4,13 +4,10 @@
     ViewData["Title"] = "Atualizar tarefa na data " + Model.Data;
 }
 
-
-
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col-12">
             <div class="card">
-                <text class="card-header">Atualizar tarefa na data @Model.Data</text>
                 <form asp-action="AtualizarTarefa">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="TarefaId" />
@@ -33,7 +30,6 @@
                     <div class="card-footer">
                         <div class="form-group">
                             <input type="submit" value="Atualizar" class="btn btn-sm btn-outline-primary" /> &emsp;
-                            <a asp-action="Index" class="btn btn-sm btn-link">Voltar</a>
                         </div>
                     </div>
                 </form>
