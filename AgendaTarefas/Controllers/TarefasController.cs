@@ -52,7 +52,7 @@ namespace AgendaTarefas.Controllers
             List<DateTime> listaFeriadosDataAtual = new List<DateTime>();
             string anoPesquisa = "";
 
-            List<Tarefa> listaTarefas = _tarefaRepositorio.BuscarTarefasPorNome(nomeTarefa).Result;
+            List<Tarefa> listaTarefas = _tarefaRepositorio.BuscarTarefasPorNome(nomeTarefa);
             if (listaTarefas.Count > 0)
             {
                 listaFeriadosDataAtual = ListarFeriadosAsync(Convert.ToInt32(listaTarefas[0].Data.Substring(6))).Result;
@@ -154,7 +154,7 @@ namespace AgendaTarefas.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarTarefa(Tarefa tarefa)
+        public IActionResult CriarTarefa(Tarefa tarefa)
         {
             if (ModelState.IsValid)
             {
@@ -165,7 +165,7 @@ namespace AgendaTarefas.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AtualizarTarefa(int tarefaId)
+        public IActionResult AtualizarTarefa(int tarefaId)
         {
             Task<Tarefa> tarefa = _tarefaRepositorio.AtualizarTarefa(tarefaId);
 
@@ -176,7 +176,7 @@ namespace AgendaTarefas.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AtualizarTarefa(Tarefa tarefa)
+        public IActionResult AtualizarTarefa(Tarefa tarefa)
         {
             if (ModelState.IsValid)
             {
@@ -188,7 +188,7 @@ namespace AgendaTarefas.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> ExcluirTarefa(int tarefaId)
+        public JsonResult ExcluirTarefa(int tarefaId)
         {
             _tarefaRepositorio.ExcluirTarefa(tarefaId);
             return Json(true);

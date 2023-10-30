@@ -38,7 +38,7 @@ namespace AgendaTarefas.Repositorio
             await _contexto.SaveChangesAsync();
         }
 
-        public async Task<List<Tarefa>> BuscarTarefasPorNome(string nomeTarefa)
+        public List<Tarefa> BuscarTarefasPorNome(string nomeTarefa)
         {
             return _contexto.Tarefas.Where(t => t.Nome == nomeTarefa).OrderBy(x => x.Data).ToList();
         }
